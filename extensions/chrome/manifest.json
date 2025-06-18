@@ -6,7 +6,7 @@
     "default_title": "Activate SpacingJS - Measure element spacing",
     "default_popup": ""
   },
-  "description": "Precision spacing measurement tool for web developers and designers. Hold Alt/Option key and hover over elements to measure distances, margins, and padding with pixel-perfect accuracy.",
+  "description": "Precision spacing measurement tool for web developers and designers. Hold Alt/Option key and hover over elements to measure.",
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
@@ -17,9 +17,6 @@
   "permissions": [
     "activeTab",
     "scripting"
-  ],
-  "host_permissions": [
-    "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js"
@@ -42,15 +39,5 @@
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "spacing.min.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
-  ]
+  }
 }
