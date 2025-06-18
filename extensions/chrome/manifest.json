@@ -1,9 +1,12 @@
 {
   "manifest_version": 3,
   "name": "SpacingJS",
-  "version": "1.0.9",
-  "action": {},
-  "description": "Measure the spacing between elements on webpage. Hold down Alt (Windows) / Option (Mac) key, and move the cursor.",
+  "version": "1.1.0",
+  "action": {
+    "default_title": "Activate SpacingJS - Measure element spacing",
+    "default_popup": ""
+  },
+  "description": "Precision spacing measurement tool for web developers and designers. Hold Alt/Option key and hover over elements to measure distances, margins, and padding with pixel-perfect accuracy.",
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
@@ -11,8 +14,43 @@
   },
   "author": "Steven Lei",
   "homepage_url": "https://spacingjs.com",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Activate SpacingJS measurement tool"
+    },
+    "toggle_spacing": {
+      "suggested_key": {
+        "default": "Alt+S",
+        "mac": "Alt+S"
+      },
+      "description": "Toggle SpacingJS on/off"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "spacing.min.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
 }
