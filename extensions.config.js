@@ -10,8 +10,8 @@ const currentVersion = PackageJSON.version;
 
 build();
 function build() {
-  // build to chrome
-  execSync(`cp dist/bundle.js extensions/chrome/bundle.js`);
+  // build to chrome - use the minified version for production
+  execSync(`cp dist/spacing.min.js extensions/chrome/spacing.min.js`);
   // sync version
   ManifestJSON.version = currentVersion;
   fs.writeFileSync(
@@ -27,7 +27,7 @@ function build() {
     'utf8'
   );
   header.replace(versionReg, currentVersion);
-  const bundle = fs.readFileSync(resolve('dist/bundle.js'), 'utf8');
+  const bundle = fs.readFileSync(resolve('dist/spacing.min.js'), 'utf8');
   const script = header + '\r\n' + bundle;
   // write and prettier
   const target = `extensions/tampermonkey/spacingjs_${currentVersion}.js`;

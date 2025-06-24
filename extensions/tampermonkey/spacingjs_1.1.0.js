@@ -1,3 +1,14 @@
+// ==UserScript==
+// @name         Spacing JS
+// @version      1.0.9
+// @description  Measure the spacing between elements on webpage. Hold down Alt (Windows) / Option (Mac) key, and move the cursor.
+// @author       contact@stevenlei.com
+// @namespace    stevenlei
+// @grant        none
+// @run-at       document-start
+// @include      *://*
+// ==/UserScript==
+
 /*!
  * Spacing.js v1.1.0
  * Copyright (c) 2021-2025 Steven Lei

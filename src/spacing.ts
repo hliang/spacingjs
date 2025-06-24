@@ -28,10 +28,29 @@ const Spacing: SpacingType = {
   },
 
   stop() {
+    // Remove all event listeners
     window.removeEventListener('keydown', keyDownHandler);
     window.removeEventListener('keyup', keyUpHandler);
     window.removeEventListener('mousemove', cursorMovedHandler);
-  }
+    window.removeEventListener('mouseout', cursorLeaveHandler);
+
+    // Clean up all visual elements and reset state
+    cleanUp();
+
+    // Reset all state variables
+    active = false;
+    hoveringElement = null;
+    selectedElement = null;
+    targetElement = null;
+    delayedDismiss = false;
+    isAltKeyDown = false;
+
+    // Clear any pending timeouts
+    if (delayedRef) {
+      clearTimeout(delayedRef);
+      delayedRef = null;
+    }
+  },
 };
 
 function keyDownHandler(e: KeyboardEvent) {
@@ -46,7 +65,7 @@ function keyDownHandler(e: KeyboardEvent) {
   if (e.key === 'Alt') {
     e.preventDefault();
     isAltKeyDown = true;
-    
+
     if (!active && hoveringElement) {
       active = true;
       setSelectedElement();
@@ -73,7 +92,7 @@ function keyUpHandler(e: KeyboardEvent) {
 
 function cursorLeaveHandler(e: MouseEvent) {
   let to = e.relatedTarget as HTMLElement;
-  
+
   // Only clean up if we're not holding Alt key and moving to a non-content area
   if (!isAltKeyDown && (!to || to.nodeName === 'HTML')) {
     hoveringElement = null;
@@ -103,11 +122,22 @@ function cursorMovedHandler(e: MouseEvent) {
     // Fallback if not support composedPath
     hoveringElement = e.target as HTMLElement;
   }
+
+  // Skip if hovering over our own measurement elements
+  if (
+    hoveringElement &&
+    (hoveringElement.classList.contains('spacing-js-marker') ||
+      hoveringElement.classList.contains('spacing-js-value') ||
+      hoveringElement.classList.contains('spacing-js-placeholder'))
+  ) {
+    return;
+  }
+
   if (!active) return;
 
   setTargetElement().then(() => {
     if (selectedElement != null && targetElement != null) {
-      // Do the calculation
+      // Do the calculation with higher precision
       let selectedElementRect: DOMRect =
         selectedElement.getBoundingClientRect();
       let targetElementRect: DOMRect = targetElement.getBoundingClientRect();
@@ -128,8 +158,7 @@ function cursorMovedHandler(e: MouseEvent) {
         selected.inside(target) ||
         selected.colliding(target)
       ) {
-        console.log(`containing || inside || colliding`);
-
+        // Elements are overlapping or nested - measure internal spacing
         top = Math.round(
           Math.abs(selectedElementRect.top - targetElementRect.top)
         );
@@ -144,8 +173,7 @@ function cursorMovedHandler(e: MouseEvent) {
         );
         outside = false;
       } else {
-        console.log(`outside`);
-
+        // Elements are separate - measure external spacing
         top = Math.round(
           Math.abs(selectedElementRect.top - targetElementRect.bottom)
         );
@@ -161,12 +189,28 @@ function cursorMovedHandler(e: MouseEvent) {
         outside = true;
       }
 
-      placeMark(selected, target, 'top', `${top}px`, outside);
-      placeMark(selected, target, 'bottom', `${bottom}px`, outside);
-      placeMark(selected, target, 'left', `${left}px`, outside);
-      placeMark(selected, target, 'right', `${right}px`, outside);
+      // Only show measurements that are meaningful (> 0)
+      if (top > 0) {
+        placeMark(selected, target, 'top', formatDistance(top), outside);
+      }
+      if (bottom > 0) {
+        placeMark(selected, target, 'bottom', formatDistance(bottom), outside);
+      }
+      if (left > 0) {
+        placeMark(selected, target, 'left', formatDistance(left), outside);
+      }
+      if (right > 0) {
+        placeMark(selected, target, 'right', formatDistance(right), outside);
+      }
     }
   });
+}
+
+// Helper function to format distance measurements
+function formatDistance(pixels: number): string {
+  if (pixels === 0) return '0px';
+  if (pixels < 1) return '<1px';
+  return `${pixels}px`;
 }
 
 function setSelectedElement(): void {
